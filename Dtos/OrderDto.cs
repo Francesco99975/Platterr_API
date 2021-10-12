@@ -13,6 +13,11 @@ namespace platterr_api.Dtos
         public String CustomerLastName { get; set; }
 
         public String PhoneNumber { get; set; }
+
+        public String Comment { get; set; }
+
+        public String CreatedAt { get; set; }
+
         public String DueDate { get; set; }
     }
 }

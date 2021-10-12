@@ -58,10 +58,5 @@ namespace platterr_api.Data
         {
             _context.Platters.Update(platter);
         }
-
-        Task<PlatterDto> IPlattersRepository.DeletePlatter(int Id)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

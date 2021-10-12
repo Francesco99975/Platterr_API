@@ -43,8 +43,9 @@ namespace platterr_api.Controllers
                     CustomerFirstName = orderDto.CustomerFirstName,
                     CustomerLastName = orderDto.CustomerLastName,
                     PhoneNumber = orderDto.PhoneNumber,
-                    CreatedAt = DateTime.Now,
-                    DueDate = Convert.ToDateTime(orderDto.DueDate)
+                    Comment = orderDto.Comment,
+                    CreatedAt = orderDto.CreatedAt,
+                    DueDate = orderDto.DueDate
                 };
 
                 _ordersRepository.AddOrder(newOrder);
@@ -91,9 +92,13 @@ namespace platterr_api.Controllers
                 updatedOrder.CustomerFirstName = orderDto.CustomerFirstName;
                 updatedOrder.CustomerLastName = orderDto.CustomerLastName;
                 updatedOrder.PhoneNumber = orderDto.PhoneNumber;
-                updatedOrder.DueDate = Convert.ToDateTime(orderDto.DueDate);
+                updatedOrder.Comment = orderDto.Comment;
+                updatedOrder.DueDate = orderDto.DueDate;
 
-                var res = updatedOrder.Platters.OrderBy((x) => x.Id).Select(async (x) =>
+                var res = updatedOrder.Platters
+                    .Where((plt) => orderDto.Platters.Select((x) => x.Id).Contains(plt.Id))
+                    .OrderBy((x) => x.Id)
+                    .Select(async (x) =>
                 {
                     var pltReq = orderDto.Platters.Where((plt) => plt.Id == x.Id).FirstOrDefault();
                     var platter = await _plattersRepository.GetDbPlatterById(pltReq.PlatterId);
@@ -106,6 +111,26 @@ namespace platterr_api.Controllers
                 }).ToList();
 
                 updatedOrder.Platters = await Task.WhenAll(res);
+
+                var newRequests = orderDto.Platters.Where((req) => !updatedOrder.Platters.Select(x => x.Id).Contains(req.Id)).ToList();
+
+                List<PlatterRequest> tmp = new List<PlatterRequest>();
+
+                for (int i = 0; i < newRequests.Count; i++)
+                {
+                    var platter = await _plattersRepository.GetDbPlatterById(newRequests[i].PlatterId);
+                    tmp.Add(new PlatterRequest
+                    {
+                        PlatterId = platter.Id,
+                        Platter = platter,
+                        Format = platter.Formats.Where(x => x.Id == newRequests[i].FormatId).FirstOrDefault(),
+                        Quantity = newRequests[i].Quantity,
+                        Order = updatedOrder,
+                        OrderId = updatedOrder.Id
+                    });
+                }
+
+                updatedOrder.Platters = updatedOrder.Platters.Concat(tmp).ToList();
 
                 _ordersRepository.UpdateOrder(updatedOrder);
 

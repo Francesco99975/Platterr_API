@@ -16,8 +16,10 @@ namespace platterr_api.Entities
 
         public String PhoneNumber { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public String Comment { get; set; }
 
-        public DateTime DueDate { get; set; }
+        public String CreatedAt { get; set; }
+
+        public String DueDate { get; set; }
     }
 }

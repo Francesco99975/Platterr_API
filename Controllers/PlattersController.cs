@@ -79,7 +79,38 @@ namespace platterr_api.Controllers
             try
             {
                 var updatedPlatter = await _plattersRepository.GetDbPlatterById(platterDto.Id);
-                _mapper.Map(platterDto, updatedPlatter);
+
+                updatedPlatter.Name = platterDto.Name;
+                updatedPlatter.Description = platterDto.Description;
+                updatedPlatter.Formats = updatedPlatter.Formats
+                            .Where(fmt => platterDto.Formats.Select(x => x.Id).Contains(fmt.Id))
+                            .OrderBy(fmt => fmt.Id)
+                            .Select(fmt =>
+                {
+                    var changes = platterDto.Formats.Where(x => x.Id == fmt.Id).FirstOrDefault();
+
+                    fmt.Size = changes.Size;
+                    fmt.Price = changes.Price;
+
+                    return fmt;
+                }).ToList();
+
+                var newFormats = platterDto.Formats.Where((x) => updatedPlatter.Formats.Select(x => x.Id).Contains(x.Id)).ToList();
+
+                List<PlatterFormat> tmp = new List<PlatterFormat>();
+
+                for (int i = 0; i < newFormats.Count; i++)
+                {
+                    tmp.Add(new PlatterFormat
+                    {
+                        Size = newFormats[i].Size,
+                        Price = newFormats[i].Price,
+                        PlatterId = updatedPlatter.Id,
+                        Platter = updatedPlatter
+                    });
+                }
+
+                updatedPlatter.Formats = updatedPlatter.Formats.Concat(tmp).ToList();
 
                 _plattersRepository.UpdatePlatter(updatedPlatter);
 
