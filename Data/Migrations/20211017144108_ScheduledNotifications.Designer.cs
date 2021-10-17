@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using platterr_api.Data;
 
 namespace platterr_api.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20211017144108_ScheduledNotifications")]
+    partial class ScheduledNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,23 +119,6 @@ namespace platterr_api.Data.Migrations
                     b.HasIndex("PlatterId");
 
                     b.ToTable("PlatterRequests");
-                });
-
-            modelBuilder.Entity("platterr_api.Entities.ScheduledNotification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ScheduledDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ScheduledNotifications");
                 });
 
             modelBuilder.Entity("platterr_api.Entities.PlatterFormat", b =>

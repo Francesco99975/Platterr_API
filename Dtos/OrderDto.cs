@@ -16,6 +16,10 @@ namespace platterr_api.Dtos
 
         public String Comment { get; set; }
 
+        public bool Delivery { get; set; }
+
+        public bool Paid { get; set; }
+
         public String CreatedAt { get; set; }
 
         public String DueDate { get; set; }

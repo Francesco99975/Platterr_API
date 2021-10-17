@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using platterr_api.Dtos;
 using platterr_api.Entities;
@@ -14,8 +13,10 @@ namespace platterr_api.Controllers
     {
         private readonly IOrdersRepository _ordersRepository;
         private readonly IPlattersRepository _plattersRepository;
-        public OrdersController(IOrdersRepository ordersRepository, IPlattersRepository plattersRepository)
+        private readonly IScheduledNotificationsRepository _scheduledNotificationsRepository;
+        public OrdersController(IOrdersRepository ordersRepository, IPlattersRepository plattersRepository, IScheduledNotificationsRepository scheduledNotificationsRepository)
         {
+            _scheduledNotificationsRepository = scheduledNotificationsRepository;
             _plattersRepository = plattersRepository;
             _ordersRepository = ordersRepository;
         }
@@ -44,6 +45,8 @@ namespace platterr_api.Controllers
                     CustomerLastName = orderDto.CustomerLastName,
                     PhoneNumber = orderDto.PhoneNumber,
                     Comment = orderDto.Comment,
+                    Delivery = orderDto.Delivery,
+                    Paid = orderDto.Paid,
                     CreatedAt = orderDto.CreatedAt,
                     DueDate = orderDto.DueDate
                 };
@@ -70,7 +73,12 @@ namespace platterr_api.Controllers
 
                 _ordersRepository.UpdateOrder(newOrder);
 
-                if (await _plattersRepository.SaveAllAsync()) return Created("", _ordersRepository.GetOrderById(newOrder.Id));
+                _scheduledNotificationsRepository.scheduleNotification(newOrder.Id, newOrder.CustomerLastName, DateTime.Parse(newOrder.DueDate).Subtract(TimeSpan.FromDays(1)));
+
+                if (await _plattersRepository.SaveAllAsync())
+                {
+                    return Created("", _ordersRepository.GetOrderById(newOrder.Id));
+                }
 
                 return BadRequest("Database Error");
             }
@@ -93,6 +101,8 @@ namespace platterr_api.Controllers
                 updatedOrder.CustomerLastName = orderDto.CustomerLastName;
                 updatedOrder.PhoneNumber = orderDto.PhoneNumber;
                 updatedOrder.Comment = orderDto.Comment;
+                updatedOrder.Delivery = orderDto.Delivery;
+                updatedOrder.Paid = orderDto.Paid;
                 updatedOrder.DueDate = orderDto.DueDate;
 
                 var res = updatedOrder.Platters
@@ -134,6 +144,8 @@ namespace platterr_api.Controllers
 
                 _ordersRepository.UpdateOrder(updatedOrder);
 
+                _scheduledNotificationsRepository.updateScheduledNotification(updatedOrder.Id, updatedOrder.CustomerLastName, DateTime.Parse(updatedOrder.DueDate).Subtract(TimeSpan.FromDays(1)));
+
                 if (await _ordersRepository.SaveAllAsync()) return Ok(await _ordersRepository.GetOrderById(updatedOrder.Id));
 
                 return BadRequest("Could not update order");
@@ -150,6 +162,8 @@ namespace platterr_api.Controllers
             try
             {
                 var deleted = await _ordersRepository.DeleteOrder(id);
+
+                _scheduledNotificationsRepository.removeScheduledNotification(id);
 
                 if (await _ordersRepository.SaveAllAsync()) return Ok(deleted);
 

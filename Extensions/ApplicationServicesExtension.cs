@@ -18,6 +18,7 @@ namespace platterr_api.Extensions
             // });
             services.AddScoped<IPlattersRepository, PlattersRepository>();
             services.AddScoped<IOrdersRepository, OrdersRepository>();
+            services.AddScoped<IScheduledNotificationsRepository, ScheduledNotificationsRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {

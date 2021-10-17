@@ -95,7 +95,7 @@ namespace platterr_api.Controllers
                     return fmt;
                 }).ToList();
 
-                var newFormats = platterDto.Formats.Where((x) => updatedPlatter.Formats.Select(x => x.Id).Contains(x.Id)).ToList();
+                var newFormats = platterDto.Formats.Where((x) => !updatedPlatter.Formats.Select(x => x.Id).Contains(x.Id)).ToList();
 
                 List<PlatterFormat> tmp = new List<PlatterFormat>();
 

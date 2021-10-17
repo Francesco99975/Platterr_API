@@ -12,5 +12,7 @@ namespace platterr_api.Data
         public DbSet<Platter> Platters { get; set; }
 
         public DbSet<Order> Orders { get; set; }
+
+        public DbSet<ScheduledNotification> ScheduledNotifications { get; set; }
     }
 }
