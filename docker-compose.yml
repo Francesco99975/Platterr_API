@@ -1,0 +1,11 @@
+version: "3"
+services:
+  urx:
+    image: francesco99975/platterr_api
+    ports:
+      - "6553:80"
+    volumes:
+      - platterr_api:/app
+volumes:
+  platterr_api:
+    driver: local
