@@ -36,7 +36,7 @@ namespace platterr_api.Helpers
                         Android = new FirebaseAdmin.Messaging.AndroidConfig()
                         {
                             Priority = Priority.Normal,
-                            TimeToLive = TimeSpan.FromHours(1),
+                            TimeToLive = TimeSpan.FromHours(24),
                             RestrictedPackageName = "dev.francescobarranca.platterr",
                         },
                         Topic = "all"
