@@ -43,6 +43,8 @@ namespace platterr_api.Helpers
                     };
 
                     await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                    _scheduledNotificationsRepository.removeScheduledNotification(notif.Id);
+                    await _scheduledNotificationsRepository.SaveAllAsync();
                 }
             }
         }

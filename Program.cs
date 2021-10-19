@@ -21,7 +21,7 @@ namespace platterr_api
             host.Services.UseScheduler(scheduler =>
             {
                 var notifScheduler = scheduler.Schedule<NotificationsSender>();
-                notifScheduler.DailyAtHour(10);
+                notifScheduler.DailyAtHour(14);
             });
 
             host.Run();
