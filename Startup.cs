@@ -50,6 +50,7 @@ namespace platterr_api
             }
 
             // app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
@@ -61,7 +62,7 @@ namespace platterr_api
             {
                 endpoints.MapGet("/", async context =>
                 {
-                    await context.Response.WriteAsync("Hello");
+                    await context.Response.SendFileAsync("wwwroot/index.html");
                 });
 
                 endpoints.MapControllers();

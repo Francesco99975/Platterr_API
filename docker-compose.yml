@@ -1,6 +1,7 @@
 version: "3"
 services:
-  urx:
+  platterr_api:
+    container_name: platterr_api
     image: francesco99975/platterr_api
     ports:
       - "6553:80"
