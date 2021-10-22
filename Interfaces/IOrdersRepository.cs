@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using iText.Layout;
 using platterr_api.Dtos;
 using platterr_api.Entities;
 
@@ -18,6 +19,8 @@ namespace platterr_api.Interfaces
         void UpdateOrder(Order order);
 
         Task<OrderDto> DeleteOrder(int Id);
+
+        Task<OrderDto> GeneratePdf(int id);
 
         Task<bool> SaveAllAsync();
     }

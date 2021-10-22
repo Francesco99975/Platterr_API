@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using platterr_api.Dtos;
 
 namespace platterr_api.Entities
 {
@@ -17,6 +16,8 @@ namespace platterr_api.Entities
         public String PhoneNumber { get; set; }
 
         public String Comment { get; set; }
+
+        public double ExtraFee { get; set; }
 
         public bool Delivery { get; set; }
 

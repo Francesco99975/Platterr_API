@@ -16,6 +16,8 @@ namespace platterr_api.Dtos
 
         public String Comment { get; set; }
 
+        public double ExtraFee { get; set; }
+
         public bool Delivery { get; set; }
 
         public bool Paid { get; set; }

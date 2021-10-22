@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using platterr_api.Dtos;
 using platterr_api.Entities;
 using platterr_api.Interfaces;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace platterr_api.Controllers
 {
@@ -14,8 +18,10 @@ namespace platterr_api.Controllers
         private readonly IOrdersRepository _ordersRepository;
         private readonly IPlattersRepository _plattersRepository;
         private readonly IScheduledNotificationsRepository _scheduledNotificationsRepository;
-        public OrdersController(IOrdersRepository ordersRepository, IPlattersRepository plattersRepository, IScheduledNotificationsRepository scheduledNotificationsRepository)
+        private readonly IConfiguration _config;
+        public OrdersController(IOrdersRepository ordersRepository, IPlattersRepository plattersRepository, IScheduledNotificationsRepository scheduledNotificationsRepository, IConfiguration config)
         {
+            _config = config;
             _scheduledNotificationsRepository = scheduledNotificationsRepository;
             _plattersRepository = plattersRepository;
             _ordersRepository = ordersRepository;
@@ -45,6 +51,7 @@ namespace platterr_api.Controllers
                     CustomerLastName = orderDto.CustomerLastName,
                     PhoneNumber = orderDto.PhoneNumber,
                     Comment = orderDto.Comment,
+                    ExtraFee = orderDto.ExtraFee,
                     Delivery = orderDto.Delivery,
                     Paid = orderDto.Paid,
                     CreatedAt = orderDto.CreatedAt,
@@ -101,6 +108,7 @@ namespace platterr_api.Controllers
                 updatedOrder.CustomerLastName = orderDto.CustomerLastName;
                 updatedOrder.PhoneNumber = orderDto.PhoneNumber;
                 updatedOrder.Comment = orderDto.Comment;
+                updatedOrder.ExtraFee = orderDto.ExtraFee;
                 updatedOrder.Delivery = orderDto.Delivery;
                 updatedOrder.Paid = orderDto.Paid;
                 updatedOrder.DueDate = orderDto.DueDate;
@@ -172,6 +180,43 @@ namespace platterr_api.Controllers
             catch (System.Exception e)
             {
                 return BadRequest("Could not delete order: " + e);
+            }
+        }
+
+        [HttpPost("pdf/{id}")]
+        public async Task<ActionResult> GeneratePdfDocument(int id)
+        {
+            try
+            {
+                var order = await _ordersRepository.GeneratePdf(id);
+
+                var client = new SendGridClient(_config.GetSection("MAIL_API_KEY").Value);
+
+                var from = new EmailAddress("francescobarranca@outlook.com", "AUTOMATIC SERVICE");
+                var to = new EmailAddress("francescomich@ymail.com", "Francesco");
+                var subject = "Order Transcripted to PDF";
+                var htmlContent = "<strong>Order Transcripted to PDF</strong>";
+
+                var message = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+
+                var attachment = new Attachment();
+                attachment.Type = "application/pdf";
+                attachment.Filename = $"{order.Id}.pdf";
+                byte[] bytes = System.IO.File.ReadAllBytes($"Data/Files/{order.Id}.pdf");
+                attachment.Content = Convert.ToBase64String(bytes);
+
+                message.AddAttachment(attachment);
+
+                var res = await client.SendEmailAsync(message);
+
+                System.IO.File.Delete($"Data/Files/{order.Id}.pdf");
+
+                return Created("", res.IsSuccessStatusCode);
+
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest("Could not generate pdf: " + e);
             }
         }
     }
