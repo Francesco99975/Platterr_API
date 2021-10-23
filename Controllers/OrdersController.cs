@@ -188,7 +188,7 @@ namespace platterr_api.Controllers
         {
             try
             {
-                var order = await _ordersRepository.GeneratePdf(id);
+                var filename = await _ordersRepository.GeneratePdf(id);
 
                 var client = new SendGridClient(_config.GetSection("MAIL_API_KEY").Value);
 
@@ -201,15 +201,15 @@ namespace platterr_api.Controllers
 
                 var attachment = new Attachment();
                 attachment.Type = "application/pdf";
-                attachment.Filename = $"{order.Id}.pdf";
-                byte[] bytes = System.IO.File.ReadAllBytes($"Data/Files/{order.Id}.pdf");
+                attachment.Filename = filename;
+                byte[] bytes = System.IO.File.ReadAllBytes(filename);
                 attachment.Content = Convert.ToBase64String(bytes);
 
                 message.AddAttachment(attachment);
 
                 var res = await client.SendEmailAsync(message);
 
-                System.IO.File.Delete($"Data/Files/{order.Id}.pdf");
+                System.IO.File.Delete(filename);
 
                 return Created("", res.IsSuccessStatusCode);
 

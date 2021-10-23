@@ -77,10 +77,11 @@ namespace platterr_api.Data
             _context.Orders.Update(order);
         }
 
-        public async Task<OrderDto> GeneratePdf(int id)
+        public async Task<String> GeneratePdf(int id)
         {
             var order = await GetDbOrderById(id);
-            PdfWriter writer = new PdfWriter($"Data/Files/{order.Id}.pdf");
+            var filename = $"{order.Id}-{order.CustomerLastName}.pdf";
+            PdfWriter writer = new PdfWriter(filename);
             PdfDocument pdf = new PdfDocument(writer);
             Document document = new Document(pdf);
 
@@ -160,7 +161,7 @@ namespace platterr_api.Data
 
             document.Close();
 
-            return await GetOrderById(id);
+            return filename;
         }
     }
 }

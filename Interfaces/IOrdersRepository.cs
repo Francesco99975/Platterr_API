@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using iText.Layout;
@@ -20,7 +21,7 @@ namespace platterr_api.Interfaces
 
         Task<OrderDto> DeleteOrder(int Id);
 
-        Task<OrderDto> GeneratePdf(int id);
+        Task<String> GeneratePdf(int id);
 
         Task<bool> SaveAllAsync();
     }
