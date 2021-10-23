@@ -193,7 +193,7 @@ namespace platterr_api.Controllers
                 var client = new SendGridClient(_config.GetSection("MAIL_API_KEY").Value);
 
                 var from = new EmailAddress("francescobarranca@outlook.com", "AUTOMATIC SERVICE");
-                var to = new EmailAddress("francescomich@ymail.com", "Francesco");
+                var to = new EmailAddress(_config.GetSection("RECIPIENT").Value);
                 var subject = "Order Transcripted to PDF";
                 var htmlContent = "<strong>Order Transcripted to PDF</strong>";
 

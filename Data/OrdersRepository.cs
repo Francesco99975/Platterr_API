@@ -92,7 +92,7 @@ namespace platterr_api.Data
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(15);
 
-            Paragraph pPhoneNumber = new Paragraph($"PHONE NUMBER: {order.PhoneNumber}")
+            Paragraph pPhoneNumber = new Paragraph($"Phone Number: {order.PhoneNumber}")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(15);
 
@@ -106,11 +106,11 @@ namespace platterr_api.Data
 
             LineSeparator ls = new LineSeparator(new SolidLine());
 
-            Paragraph pPlattersHeader = new Paragraph("ORDERED PLATTERS")
+            Paragraph pPlattersHeader = new Paragraph("ORDERED DELI PLATTERS")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(20);
 
-            List<Paragraph> pPlattersRequests = order.Platters.Select(plt => new Paragraph($"{plt.Platter.Name} / {plt.Format.Size} - {plt.Format.Price.ToString("C", CultureInfo.CurrentCulture)}")
+            List<Paragraph> pPlattersRequests = order.Platters.Select(plt => new Paragraph($"{plt.Platter.Name} / {plt.Format.Size}\" - {plt.Format.Price.ToString("C", CultureInfo.CurrentCulture)}")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(15)).ToList();
 
