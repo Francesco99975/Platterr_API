@@ -4,3 +4,4 @@ out
 obj
 appsettings.*
 *.db
+firebase_key.json
