@@ -1,0 +1,8 @@
+.vscode
+.dockerignore
+.gitignore
+*Development.json
+Data/Migrations
+*.db
+*.tar
+Dockerfile

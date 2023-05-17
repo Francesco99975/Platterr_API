@@ -6,3 +6,4 @@ appsettings.*
 *.db
 firebase_key.json
 wwwroot/
+*.tar
